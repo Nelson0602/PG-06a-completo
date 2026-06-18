@@ -1,0 +1,140 @@
+package model.Queue;
+
+import model.Node;
+
+public class PriorityLinkedQueue<T> implements MyQueue<T> {
+    private Node<T> front;
+    private Node<T> rear;
+    private int size;
+
+    public PriorityLinkedQueue() {
+        front = rear = null;
+        size = 0;
+    }
+
+    public Node<T> getFront() { return front; }
+    public Node<T> getRear()  { return rear;  }
+
+    @Override
+    public int size() { return size; }
+
+    @Override
+    public void clear() {
+        front = rear = null;
+        size = 0;
+    }
+
+    @Override
+    public boolean isEmpty() { return front == null; }
+
+    @Override
+    public int indexOf(T element) throws QueueException {
+        if (isEmpty()) throw new QueueException("Priority Linked Queue is empty");
+        Node<T> aux = front;
+        int index = 1;
+        while (aux != null) {
+            if (equals(aux.data, element)) return index;
+            index++;
+            aux = aux.next;
+        }
+        return -1;
+    }
+
+    @Override
+    public void enQueue(T element) throws QueueException {
+        Node<T> node = new Node<>(element);
+        if (isEmpty()) front = rear = node;
+        else {
+            rear.next = node;
+            rear = node;
+        }
+        size++;
+    }
+
+    @Override
+    public T deQueue() throws QueueException {
+        if (isEmpty()) throw new QueueException("Priority Linked Queue is empty");
+        T element = front.data;
+        if (front == rear) clear();
+        else {
+            front = front.next;
+            size--;
+        }
+        return element;
+    }
+
+    /**
+     * Encola con prioridad: 1=alta (va primero), 3=baja (va al final)
+     * Inserta antes del primer nodo con prioridad numericamente mayor
+     */
+    @Override
+    public void enQueue(T element, Integer priority) throws QueueException {
+        Node<T> node = new Node<>(element, priority);
+        if (isEmpty()) {
+            front = rear = node;
+        } else {
+            Node<T> aux = front;
+            Node<T> prev = null;
+            // insertar antes del primer nodo cuya prioridad es MAYOR (número mayor = menos urgente)
+            while (aux != null && aux.priority <= priority) {
+                prev = aux;
+                aux = aux.next;
+            }
+            if (aux == front) {
+                // insertar al frente
+                node.next = front;
+                front = node;
+            } else if (aux == null) {
+                // insertar al final
+                rear.next = node;
+                rear = node;
+            } else {
+                // insertar en el medio
+                prev.next = node;
+                node.next = aux;
+            }
+        }
+        size++;
+    }
+
+    @Override
+    public boolean contains(T element) throws QueueException {
+        if (isEmpty()) throw new QueueException("Priority Linked Queue is empty");
+        Node<T> aux = front;
+        while (aux != null) {
+            if (equals(aux.data, element)) return true;
+            aux = aux.next;
+        }
+        return false;
+    }
+
+    @Override
+    public T peek() throws QueueException {
+        if (isEmpty()) throw new QueueException("Priority Linked Queue is empty");
+        return front.data;
+    }
+
+    @Override
+    public T front() throws QueueException {
+        if (isEmpty()) throw new QueueException("Priority Linked Queue is empty");
+        return front.data;
+    }
+
+    @Override
+    public String toString() {
+        if (isEmpty()) return "Priority Linked Queue is empty";
+        StringBuilder sb = new StringBuilder("FRONT → ");
+        Node<T> aux = front;
+        while (aux != null) {
+            sb.append("[").append(aux.data).append("(p").append(aux.priority).append(")]");
+            if (aux.next != null) sb.append(" → ");
+            aux = aux.next;
+        }
+        sb.append(" → REAR");
+        return sb.toString();
+    }
+
+    private boolean equals(T a, T b) {
+        return a == null ? b == null : a.equals(b);
+    }
+}

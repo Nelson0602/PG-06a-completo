@@ -1,0 +1,61 @@
+Index: src/main/java/model/tree/BST.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package model.tree;\r\n\r\npublic class BST<T extends Comparable<T>> extends BTree<T>{\r\n    private BTreeNode<T> root; // representa la única entrada al árbol\r\n\r\n\r\n    @Override\r\n    public void remove(T element) throws TreeException {\r\n        super.remove(element);\r\n    }\r\n\r\n    @Override\r\n    public boolean contains(T element) throws TreeException {\r\n        return super.contains(element);\r\n    }\r\n\r\n    @Override\r\n    public void add(T element) {\r\n        this.root = add(root,element);\r\n\r\n    }\r\n    private BTreeNode<T> add(BTreeNode<T> node, T element){\r\n        if(node == null){\r\n            node = new BTreeNode<>(element);\r\n\r\n        }else if(compareElements(element,node.data) < 0)\r\n            node.left = add(node.left,element);\r\n        else if(compareElements(element,node.data) > 0)\r\n            node.right = add(node.right,element);\r\n\r\n        return node;\r\n    }\r\n\r\n\r\n\r\n    @Override\r\n    public T min() throws TreeException {\r\n        return super.min();\r\n    }\r\n\r\n    @Override\r\n    public T max() throws TreeException {\r\n        return super.max();\r\n    }\r\n\r\n    @Override\r\n    public String preOrder() throws TreeException {\r\n        return super.preOrder();\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/model/tree/BST.java b/src/main/java/model/tree/BST.java
+--- a/src/main/java/model/tree/BST.java	(revision 4137ecd4f7871ae686ccffb5f8c7421844bcb3ac)
++++ b/src/main/java/model/tree/BST.java	(date 1779925707323)
+@@ -1,50 +1,6 @@
+ package model.tree;
+ 
+ public class BST<T extends Comparable<T>> extends BTree<T>{
+-    private BTreeNode<T> root; // representa la única entrada al árbol
+-
+-
+-    @Override
+-    public void remove(T element) throws TreeException {
+-        super.remove(element);
+-    }
+-
+-    @Override
+-    public boolean contains(T element) throws TreeException {
+-        return super.contains(element);
+-    }
+-
+-    @Override
+-    public void add(T element) {
+-        this.root = add(root,element);
+-
+-    }
+-    private BTreeNode<T> add(BTreeNode<T> node, T element){
+-        if(node == null){
+-            node = new BTreeNode<>(element);
+-
+-        }else if(compareElements(element,node.data) < 0)
+-            node.left = add(node.left,element);
+-        else if(compareElements(element,node.data) > 0)
+-            node.right = add(node.right,element);
+ 
+-        return node;
+-    }
+ 
+-
+-
+-    @Override
+-    public T min() throws TreeException {
+-        return super.min();
+-    }
+-
+-    @Override
+-    public T max() throws TreeException {
+-        return super.max();
+-    }
+-
+-    @Override
+-    public String preOrder() throws TreeException {
+-        return super.preOrder();
+-    }
+ }

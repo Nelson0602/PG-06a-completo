@@ -1,0 +1,16 @@
+Index: src/main/java/model/tree/BST.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package model.tree;\r\n\r\npublic class BST<T extends Comparable<T>> extends BTree<T>{\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/model/tree/BST.java b/src/main/java/model/tree/BST.java
+--- a/src/main/java/model/tree/BST.java	(revision 937a45c18bc0a59e10ec37cb565d01ace6da7427)
++++ b/src/main/java/model/tree/BST.java	(date 1779924706483)
+@@ -2,4 +2,5 @@
+ 
+ public class BST<T extends Comparable<T>> extends BTree<T>{
+ 
++
+ }
