@@ -46,7 +46,6 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList<T> implemen
         return fromAtoB;
     }
 
-    // busca en la lista de vecinos del nodo dado
     private Node<T> getNodeNeighbor(Node<T> headNode, T element) {
         if(headNode == null || headNode.neighbor == null) return null;
         Node<T> aux = headNode.neighbor;
@@ -121,7 +120,6 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList<T> implemen
         if(!containsVertex(element))
             throw new GraphException("Linked Graph Not Contains Vertex");
         remove(element);
-        // limpiar el rastro del vértice en las listas de vecinos restantes
         if(!isEmpty()) {
             int len = size();
             for (int i = 1; i <= len; i++) {
@@ -131,20 +129,17 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList<T> implemen
         }
     }
 
-    // no lanza excepción si no hay vecinos — simplemente no hace nada
     private void removeNeighborIfExists(Node<T> headNode, T element) {
         if(headNode == null || headNode.neighbor == null) return;
-        // Caso 1: el primer vecino es el que hay que eliminar
         if(equals(headNode.neighbor.data, element)) {
             headNode.neighbor = headNode.neighbor.neighbor;
             return;
         }
-        // Caso 2: está en medio o al final
         Node<T> prev = headNode.neighbor;
         while(prev.neighbor != null) {
             if(equals(prev.neighbor.data, element)) {
                 prev.neighbor = prev.neighbor.neighbor;
-                return; // solo puede existir una vez
+                return;
             }
             prev = prev.neighbor;
         }
@@ -167,24 +162,19 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList<T> implemen
     @Override
     public String dfs() throws GraphException, StackException, ListException {
         if(isEmpty()) throw new GraphException("Linked Graph is Empty");
-        int len = size();
-        // marcar todos como no visitados usando el campo visited de los nodos via índice
-        boolean[] visited = new boolean[len + 1];
+        setVisitedAll(false);
         StringBuilder info = new StringBuilder();
         stack.clear();
-
-        // empieza desde el vértice en posición 1
-        visited[1] = true;
+        getNodeByIndex(1).visited = true;
         info.append(getNodeByIndex(1).data).append(", ");
         stack.push(1);
-
         while(!stack.isEmpty()) {
             int topIndex = (int) stack.top();
-            int nextIndex = adjacentNotVisited(topIndex, visited, len);
+            int nextIndex = adjacentNotVisited(topIndex);
             if(nextIndex == -1) {
                 stack.pop();
             } else {
-                visited[nextIndex] = true;
+                getNodeByIndex(nextIndex).visited = true;
                 info.append(getNodeByIndex(nextIndex).data).append(", ");
                 stack.push(nextIndex);
             }
@@ -195,20 +185,17 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList<T> implemen
     @Override
     public String bfs() throws GraphException, QueueException, ListException {
         if(isEmpty()) throw new GraphException("Linked Graph is Empty");
-        int len = size();
-        boolean[] visited = new boolean[len + 1];
+        setVisitedAll(false);
         StringBuilder info = new StringBuilder();
         queue.clear();
-
-        visited[1] = true;
+        getNodeByIndex(1).visited = true;
         info.append(getNodeByIndex(1).data).append(", ");
         queue.enQueue(1);
-
         while(!queue.isEmpty()) {
             int current = (int) queue.deQueue();
             int nextIndex;
-            while((nextIndex = adjacentNotVisited(current, visited, len)) != -1) {
-                visited[nextIndex] = true;
+            while((nextIndex = adjacentNotVisited(current)) != -1) {
+                getNodeByIndex(nextIndex).visited = true;
                 info.append(getNodeByIndex(nextIndex).data).append(", ");
                 queue.enQueue(nextIndex);
             }
@@ -216,16 +203,22 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList<T> implemen
         return info.toString();
     }
 
-    // dado el índice 1-based de un vértice, busca el índice del primer vecino no visitado
-    private int adjacentNotVisited(int index, boolean[] visited, int len) throws ListException {
+    private void setVisitedAll(boolean value) throws ListException {
+        int len = size();
+        for (int i = 1; i <= len; i++) {
+            getNodeByIndex(i).visited = value;
+        }
+    }
+
+    private int adjacentNotVisited(int index) throws ListException {
         Node<T> node = getNodeByIndex(index);
         if(node == null) return -1;
-        Node<T> aux = node.neighbor; // lista de vecinos
+        Node<T> aux = node.neighbor;
+        int len = size();
         while(aux != null) {
-            // busca el índice (1-based) de este vecino en la lista principal
             for(int i = 1; i <= len; i++) {
                 Node<T> candidate = getNodeByIndex(i);
-                if(candidate != null && equals(candidate.data, aux.data) && !visited[i])
+                if(candidate != null && equals(candidate.data, aux.data) && !candidate.visited)
                     return i;
             }
             aux = aux.neighbor;
@@ -314,5 +307,29 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList<T> implemen
             while (aux != null) { count++; aux = aux.neighbor; }
         }
         return directed ? count : count / 2;
+    }
+
+    @Override
+    public int totalEdges(T element) throws GraphException, ListException {
+        if (!containsVertex(element)) throw new GraphException("Linked Graph Not Contains Vertex");
+        Node<T> node = getNode(element);
+        int count = 0;
+        Node<T> aux = node.neighbor;
+        while (aux != null) { count++; aux = aux.neighbor; }
+        return count;
+    }
+
+    @Override
+    public String getEdges(T element) throws GraphException, ListException {
+        if (!containsVertex(element)) throw new GraphException("Linked Graph Not Contains Vertex");
+        Node<T> node = getNode(element);
+        StringBuilder sb = new StringBuilder();
+        Node<T> aux = node.neighbor;
+        while (aux != null) {
+            sb.append(aux.data).append(" ");
+            aux = aux.neighbor;
+        }
+        if (sb.length() == 0) return "The vertex has no edges";
+        return sb.toString().trim();
     }
 }

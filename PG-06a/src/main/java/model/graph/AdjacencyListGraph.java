@@ -126,7 +126,6 @@ public class AdjacencyListGraph<T extends Comparable<T>> extends AdjacencyMatrix
                 adjacencyMatrix[i][counter] = (T) Integer.valueOf(0);
                 adjacencyMatrix[counter][i] = (T) Integer.valueOf(0);
             }
-
             for (int i = 0; i < counter; i++) {
                 Vertex<T> vertex = vertexList[i];
                 vertex.headNode = removeNeighborIfExists(vertex.headNode, element);
@@ -288,5 +287,29 @@ public class AdjacencyListGraph<T extends Comparable<T>> extends AdjacencyMatrix
             while (aux != null) { count++; aux = aux.neighbor; }
         }
         return directed ? count : count / 2;
+    }
+
+    @Override
+    public int totalEdges(T element) throws GraphException, ListException {
+        if (!containsVertex(element)) throw new GraphException("Adjacency List Graph Not Contains Vertex");
+        Vertex<T> v = getVertex(element);
+        int count = 0;
+        Node<T> aux = v.headNode;
+        while (aux != null) { count++; aux = aux.neighbor; }
+        return count;
+    }
+
+    @Override
+    public String getEdges(T element) throws GraphException, ListException {
+        if (!containsVertex(element)) throw new GraphException("Adjacency List Graph Not Contains Vertex");
+        Vertex<T> v = getVertex(element);
+        StringBuilder sb = new StringBuilder();
+        Node<T> aux = v.headNode;
+        while (aux != null) {
+            sb.append(aux.data).append(" ");
+            aux = aux.neighbor;
+        }
+        if (sb.length() == 0) return "The vertex has no edges";
+        return sb.toString().trim();
     }
 }

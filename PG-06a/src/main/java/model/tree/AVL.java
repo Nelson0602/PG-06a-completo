@@ -192,4 +192,20 @@ public class AVL<T extends Comparable<T>> extends BST<T> {
         }
         return isBalanced(node.left) && isBalanced(node.right);
     }
+
+    @Override
+    public void tighten() throws TreeException {
+        super.tighten();
+        java.util.List<T> values = new java.util.ArrayList<>();
+        collectInOrder(root, values);
+        root = null;
+        for (T v : values) add(v);
+    }
+
+    private void collectInOrder(BTreeNode<T> node, java.util.List<T> list) {
+        if (node == null) return;
+        collectInOrder(node.left, list);
+        list.add(node.data);
+        collectInOrder(node.right, list);
+    }
 }

@@ -1,5 +1,7 @@
 package model.tree;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class BTree<T extends Comparable<T>> implements Tree<T> {
@@ -254,12 +256,6 @@ public class BTree<T extends Comparable<T>> implements Tree<T> {
         return a.compareTo(b);
     }
 
-    /*
-     *Practica examen
-     *
-     */
-
-    //punto 1: nodos que tienen al menos un hijo
     public String printNodesWithChildren() throws TreeException {
         if (isEmpty()) throw new TreeException("Binary Tree is empty");
         return printNodesWithChildren(root);
@@ -281,7 +277,6 @@ public class BTree<T extends Comparable<T>> implements Tree<T> {
         return result;
     }
 
-    //punto 2: nodos que tienen exactamente un hijo
     public String printNodes1Child() throws TreeException {
         if (isEmpty()) throw new TreeException("Binary Tree is empty");
         return printNodes1Child(root);
@@ -305,7 +300,6 @@ public class BTree<T extends Comparable<T>> implements Tree<T> {
         return result;
     }
 
-    //punto 3: nodos que tienen los dos hijos
     public String printNodes2Children() throws TreeException {
         if (isEmpty()) throw new TreeException("Binary Tree is empty");
         return printNodes2Children(root);
@@ -324,7 +318,6 @@ public class BTree<T extends Comparable<T>> implements Tree<T> {
         return result;
     }
 
-    //punto 4: hojas del arbol
     public String printLeaves() throws TreeException {
         if (isEmpty()) throw new TreeException("Binary Tree is empty");
         return printLeaves(root);
@@ -343,7 +336,6 @@ public class BTree<T extends Comparable<T>> implements Tree<T> {
         return result;
     }
 
-    //punto 5: abuelo de un elemento
     public Object grandFather(T element) throws TreeException {
         if (isEmpty()) throw new TreeException("Binary Tree is empty");
         return grandFather(root, element, null, null);
@@ -357,13 +349,12 @@ public class BTree<T extends Comparable<T>> implements Tree<T> {
             return grandParent.data;
         }
 
-        if (compareElements(element, node.data) < 0)
-            return grandFather(node.left, element, node, parent);
-        else
-            return grandFather(node.right, element, node, parent);
+        Object leftResult = grandFather(node.left, element, node, parent);
+        if (!leftResult.equals("no tiene abuelo")) return leftResult;
+
+        return grandFather(node.right, element, node, parent);
     }
 
-    //punto 6: padre de un elemento
     public Object father(T element) throws TreeException {
         if (isEmpty()) throw new TreeException("Binary Tree is empty");
         return father(root, element, null);
@@ -377,13 +368,12 @@ public class BTree<T extends Comparable<T>> implements Tree<T> {
             return parent.data;
         }
 
-        if (compareElements(element, node.data) < 0)
-            return father(node.left, element, node);
-        else
-            return father(node.right, element, node);
+        Object leftResult = father(node.left, element, node);
+        if (!leftResult.equals("no tiene padre")) return leftResult;
+
+        return father(node.right, element, node);
     }
 
-    //punto 7: hermano de un elemento
     public Object brother(T element) throws TreeException {
         if (isEmpty()) throw new TreeException("Binary Tree is empty");
         return brother(root, element, null);
@@ -403,13 +393,12 @@ public class BTree<T extends Comparable<T>> implements Tree<T> {
             return "no tiene hermano";
         }
 
-        if (compareElements(element, node.data) < 0)
-            return brother(node.left, element, node);
-        else
-            return brother(node.right, element, node);
+        Object leftResult = brother(node.left, element, node);
+        if (!leftResult.equals("no tiene hermano")) return leftResult;
+
+        return brother(node.right, element, node);
     }
 
-    //punto 8: primos de un elemento
     public String cousins(T element) throws TreeException {
         if (isEmpty()) throw new TreeException("Binary Tree is empty");
 
@@ -435,7 +424,6 @@ public class BTree<T extends Comparable<T>> implements Tree<T> {
         return result;
     }
 
-    //punto 9: subarbol a partir de un elemento
     public String printSubtree(T element) throws TreeException {
         if (isEmpty()) throw new TreeException("Binary Tree is empty");
 
@@ -454,7 +442,6 @@ public class BTree<T extends Comparable<T>> implements Tree<T> {
         return result;
     }
 
-    //punto 10: cantidad total de hojas
     public int totalLeaves() throws TreeException {
         if (isEmpty()) throw new TreeException("Binary Tree is empty");
         return totalLeaves(root);
@@ -464,5 +451,113 @@ public class BTree<T extends Comparable<T>> implements Tree<T> {
         if (node == null) return 0;
         if (node.left == null && node.right == null) return 1;
         return totalLeaves(node.left) + totalLeaves(node.right);
+    }
+
+    public void tighten() throws TreeException {
+        if (isEmpty()) throw new TreeException("Binary Tree is empty");
+        root = tighten(root);
+    }
+
+    private BTreeNode<T> tighten(BTreeNode<T> node) {
+        if (node == null) return null;
+        node.left = tighten(node.left);
+        node.right = tighten(node.right);
+        if (node.left != null && node.right == null) return node.left;
+        if (node.right != null && node.left == null) return node.right;
+        return node;
+    }
+
+    public static BTree<Integer> bTreesSum(BTree<Integer> btree1, BTree<Integer> btree2) {
+        BTree<Integer> result = new BTree<>();
+        BTreeNode<Integer> root1 = btree1 == null ? null : btree1.root;
+        BTreeNode<Integer> root2 = btree2 == null ? null : btree2.root;
+        result.root = bTreesSumNodes(root1, root2);
+        return result;
+    }
+
+    private static BTreeNode<Integer> bTreesSumNodes(BTreeNode<Integer> n1, BTreeNode<Integer> n2) {
+        if (n1 == null && n2 == null) return null;
+        int v1 = n1 == null ? 0 : n1.data;
+        int v2 = n2 == null ? 0 : n2.data;
+        BTreeNode<Integer> node = new BTreeNode<>(v1 + v2);
+        node.left = bTreesSumNodes(n1 == null ? null : n1.left, n2 == null ? null : n2.left);
+        node.right = bTreesSumNodes(n1 == null ? null : n1.right, n2 == null ? null : n2.right);
+        return node;
+    }
+
+    public static BTree<Integer> btNodeSum(BTree<Integer> btree) throws TreeException {
+        if (btree == null || btree.isEmpty()) throw new TreeException("Binary Tree is empty");
+        BTree<Integer> result = new BTree<>();
+        result.root = btNodeSumNodes(btree.root);
+        return result;
+    }
+
+    private static BTreeNode<Integer> btNodeSumNodes(BTreeNode<Integer> node) {
+        if (node == null) return null;
+        BTreeNode<Integer> left = btNodeSumNodes(node.left);
+        BTreeNode<Integer> right = btNodeSumNodes(node.right);
+        int leftSum = left == null ? 0 : left.data;
+        int rightSum = right == null ? 0 : right.data;
+        BTreeNode<Integer> newNode = new BTreeNode<>(node.data + leftSum + rightSum);
+        newNode.left = left;
+        newNode.right = right;
+        return newNode;
+    }
+
+    public static boolean isABM(BTree<Integer> btree) {
+        if (btree == null || btree.root == null) return true;
+        return isABMNodes(btree.root);
+    }
+
+    private static boolean isABMNodes(BTreeNode<Integer> node) {
+        if (node == null) return true;
+        if (node.left != null && node.data > node.left.data) return false;
+        if (node.right != null && node.data > node.right.data) return false;
+        return isABMNodes(node.left) && isABMNodes(node.right);
+    }
+
+    public static BTree<Integer> joinABM(BTree<Integer> a, BTree<Integer> b) throws TreeException {
+        if (!isABM(a) || !isABM(b))
+            throw new TreeException("Uno de los arboles no es ABM");
+        List<Integer> values = new ArrayList<>();
+        collectPreOrder(a == null ? null : a.root, values);
+        collectPreOrder(b == null ? null : b.root, values);
+        Integer[] heap = values.toArray(new Integer[0]);
+        buildMinHeap(heap);
+        BTree<Integer> result = new BTree<>();
+        result.root = buildFromHeap(heap, 0);
+        return result;
+    }
+
+    private static void collectPreOrder(BTreeNode<Integer> node, List<Integer> list) {
+        if (node == null) return;
+        list.add(node.data);
+        collectPreOrder(node.left, list);
+        collectPreOrder(node.right, list);
+    }
+
+    private static void buildMinHeap(Integer[] arr) {
+        int n = arr.length;
+        for (int i = n / 2 - 1; i >= 0; i--) heapify(arr, n, i);
+    }
+
+    private static void heapify(Integer[] arr, int n, int i) {
+        int smallest = i;
+        int left = 2 * i + 1;
+        int right = 2 * i + 2;
+        if (left < n && arr[left] < arr[smallest]) smallest = left;
+        if (right < n && arr[right] < arr[smallest]) smallest = right;
+        if (smallest != i) {
+            Integer tmp = arr[i]; arr[i] = arr[smallest]; arr[smallest] = tmp;
+            heapify(arr, n, smallest);
+        }
+    }
+
+    private static BTreeNode<Integer> buildFromHeap(Integer[] arr, int i) {
+        if (i >= arr.length) return null;
+        BTreeNode<Integer> node = new BTreeNode<>(arr[i]);
+        node.left = buildFromHeap(arr, 2 * i + 1);
+        node.right = buildFromHeap(arr, 2 * i + 2);
+        return node;
     }
 }

@@ -9,11 +9,10 @@
             stylesheets="@styles.css"
             style="-fx-background-color:#0d1117;">
 
-    <!-- Header -->
     <top>
         <HBox style="-fx-background-color:#161b22; -fx-padding:8 16 8 16; -fx-spacing:12; -fx-alignment:CENTER_LEFT;">
-            <Label text="PG-06" style="-fx-background-color:#f59e0b; -fx-text-fill:#0d1117; -fx-font-weight:bold; -fx-padding:2 8; -fx-font-size:13;"/>
-            <Label text="Grafos (matriz de adyacencia, lista de adyacencia, lista enlazada) en JavaFx"
+            <Label text="PG-07" style="-fx-background-color:#f59e0b; -fx-text-fill:#0d1117; -fx-font-weight:bold; -fx-padding:2 8; -fx-font-size:13;"/>
+            <Label text="Práctica para el Segundo Examen (Árboles Binarios y Grafos)"
                    style="-fx-text-fill:white; -fx-font-weight:bold; -fx-font-size:14;"/>
             <Label text="IF-3001 · Algoritmos y Estructuras de Datos"
                    style="-fx-text-fill:#8b949e; -fx-font-size:11;"/>
@@ -24,308 +23,149 @@
         <TabPane fx:id="mainTabPane" tabClosingPolicy="UNAVAILABLE"
                  style="-fx-background-color:#0d1117;">
 
-            <!-- ═══════════════════════════════════════════════════════
-                 TAB 1 – MATRIZ DE ADYACENCIA
-            ═══════════════════════════════════════════════════════ -->
-            <Tab text="🔢 Matriz de Adyacencia">
-                <SplitPane dividerPositions="0.17,0.73">
-
-                    <!-- Panel izquierdo: configuración -->
+            <Tab text="Grafos">
+                <SplitPane dividerPositions="0.22,0.62">
                     <VBox spacing="10" style="-fx-background-color:#0d1117; -fx-padding:12;">
-                        <Label text="⚙ Configurar Grafo" style="-fx-text-fill:#58a6ff; -fx-font-weight:bold;"/>
-                        <Label text="Número de vértices (2-12):" style="-fx-text-fill:#c9d1d9; -fx-font-size:11;"/>
-                        <Spinner fx:id="matSpinner" editable="false"
-                                 style="-fx-background-color:#161b22; -fx-text-fill:white; -fx-pref-width:120;">
-                            <valueFactory>
-                                <SpinnerValueFactory.IntegerSpinnerValueFactory min="2" max="12" initialValue="6"/>
-                            </valueFactory>
-                        </Spinner>
-                        <CheckBox fx:id="matDirCheck" text="Grafo Dirigido"
-                                  style="-fx-text-fill:#c9d1d9;" selected="true"/>
-                        <Label text="Aristas (formato: u-v, separadas por coma):" style="-fx-text-fill:#c9d1d9; -fx-font-size:11;"/>
-                        <TextArea fx:id="matEdgesArea" prefHeight="90"
-                                  promptText="0-1,0-2,1-2,..."
-                                  style="-fx-background-color:#161b22; -fx-text-fill:#f97316; -fx-font-size:12;"/>
-                        <Label text="Ejemplo: 0-1 conecta el vértice 0 con el 1"
-                               style="-fx-text-fill:#8b949e; -fx-font-size:10;"/>
-                        <Button fx:id="matGenBtn" text="▶ Generar Grafo" onAction="#onMatGenerate"
-                                maxWidth="Infinity" style="-fx-background-color:#1f6feb; -fx-text-fill:white; -fx-font-weight:bold;"/>
-                        <Button fx:id="matExBtn" text="★ Cargar Ejemplo (CR)" onAction="#onMatExample"
-                                maxWidth="Infinity" style="-fx-background-color:#238636; -fx-text-fill:white;"/>
-                        <Button text="✕ Limpiar" onAction="#onMatClear"
-                                maxWidth="Infinity" style="-fx-background-color:#30363d; -fx-text-fill:white;"/>
-
-                        <Separator/>
-                        <Label text="⊙ Complejidades" style="-fx-text-fill:#58a6ff; -fx-font-weight:bold;"/>
-                        <Label text="Matriz de Adyacencia" style="-fx-text-fill:#f59e0b; -fx-font-size:11; -fx-font-weight:bold;"/>
-                        <Label text="• Espacio: O(V²)" style="-fx-text-fill:#8b949e; -fx-font-size:10;"/>
-                        <Label text="• existeArista: O(1)" style="-fx-text-fill:#8b949e; -fx-font-size:10;"/>
-                        <Label text="• vecinos: O(V)" style="-fx-text-fill:#8b949e; -fx-font-size:10;"/>
-                        <Label text="Lista de Adyacencia" style="-fx-text-fill:#f59e0b; -fx-font-size:11; -fx-font-weight:bold;"/>
-                        <Label text="• Espacio: O(V+E)" style="-fx-text-fill:#8b949e; -fx-font-size:10;"/>
-                        <Label text="• existeArista: O(lgrado)" style="-fx-text-fill:#8b949e; -fx-font-size:10;"/>
-                        <Label text="• vecinos: O(1)" style="-fx-text-fill:#8b949e; -fx-font-size:10;"/>
-                        <Label text="Lista Enlazada" style="-fx-text-fill:#f59e0b; -fx-font-size:11; -fx-font-weight:bold;"/>
-                        <Label text="• Espacio: O(V+E)" style="-fx-text-fill:#8b949e; -fx-font-size:10;"/>
-                        <Label text="• Insertar: O(1)" style="-fx-text-fill:#8b949e; -fx-font-size:10;"/>
-                        <Label text="• Control de memoria" style="-fx-text-fill:#8b949e; -fx-font-size:10;"/>
-
-                        <Separator/>
-                        <Label text="Vértices" style="-fx-text-fill:#58a6ff; -fx-font-weight:bold;"/>
-                        <Label fx:id="matVertexLegend" text="0=SJO  1=ALAJ  2=HER&#10;3=CAR  4=TURR  5=LIM&#10;6=GUA  7=PUN  8=PZE&#10;9=SCA"
-                               style="-fx-text-fill:#7ee787; -fx-font-size:10; -fx-font-family:monospace;"/>
-                    </VBox>
-
-                    <!-- Panel central: canvas -->
-                    <VBox style="-fx-background-color:#0d1117;">
-                        <Label text="Visualización del Grafo" style="-fx-text-fill:#8b949e; -fx-font-size:11; -fx-padding:6 0 0 10;"/>
-                        <Canvas fx:id="matCanvas" width="760" height="480"
-                                style="-fx-background-color:#0d1117;"/>
-                        <Label fx:id="matStatsLabel"
-                               text="Espacio: O(V²) = 36 celdas  |  existeArista: O(1)  |  vecinos: O(V)  |  insertar vértice: O(V²)"
-                               style="-fx-text-fill:#58a6ff; -fx-font-size:11; -fx-padding:4 10;"/>
-                    </VBox>
-
-                    <!-- Panel derecho: tabla y estructura -->
-                    <VBox spacing="8" style="-fx-background-color:#0d1117; -fx-padding:8;">
-                        <Label text="Tabla de Matriz M[V×V]" style="-fx-text-fill:#8b949e; -fx-font-size:11;"/>
-                        <GridPane fx:id="matrixGrid" hgap="2" vgap="2"/>
-                        <Separator/>
-                        <Label text="Información de la Estructura" style="-fx-text-fill:#8b949e; -fx-font-size:11;"/>
-                        <TextArea fx:id="matInfoArea" prefHeight="320" editable="false"
-                                  style="-fx-background-color:#161b22; -fx-text-fill:#c9d1d9; -fx-font-family:monospace; -fx-font-size:11;"/>
-                    </VBox>
-                </SplitPane>
-            </Tab>
-
-            <!-- ═══════════════════════════════════════════════════════
-                 TAB 2 – LISTA DE ADYACENCIA
-            ═══════════════════════════════════════════════════════ -->
-            <Tab text="📋 Lista de Adyacencia">
-                <SplitPane dividerPositions="0.17,0.73">
-                    <VBox spacing="10" style="-fx-background-color:#0d1117; -fx-padding:12;">
-                        <Label text="⚙ Configurar Grafo" style="-fx-text-fill:#58a6ff; -fx-font-weight:bold;"/>
-                        <Label text="Número de vértices (2-12):" style="-fx-text-fill:#c9d1d9; -fx-font-size:11;"/>
-                        <Spinner fx:id="lstSpinner" editable="false"
-                                 style="-fx-background-color:#161b22; -fx-text-fill:white; -fx-pref-width:120;">
-                            <valueFactory>
-                                <SpinnerValueFactory.IntegerSpinnerValueFactory min="2" max="12" initialValue="6"/>
-                            </valueFactory>
-                        </Spinner>
-                        <CheckBox fx:id="lstDirCheck" text="Grafo Dirigido"
-                                  style="-fx-text-fill:#c9d1d9;" selected="true"/>
-                        <Label text="Aristas (formato: u-v, separadas por coma):" style="-fx-text-fill:#c9d1d9; -fx-font-size:11;"/>
-                        <TextArea fx:id="lstEdgesArea" prefHeight="90"
-                                  promptText="0-1,0-2,1-2,..."
-                                  style="-fx-background-color:#161b22; -fx-text-fill:#f97316; -fx-font-size:12;"/>
-                        <Button fx:id="lstGenBtn" text="▶ Generar Grafo" onAction="#onLstGenerate"
-                                maxWidth="Infinity" style="-fx-background-color:#1f6feb; -fx-text-fill:white; -fx-font-weight:bold;"/>
-                        <Button text="★ Cargar Ejemplo (CR)" onAction="#onLstExample"
-                                maxWidth="Infinity" style="-fx-background-color:#238636; -fx-text-fill:white;"/>
-                        <Button text="✕ Limpiar" onAction="#onLstClear"
-                                maxWidth="Infinity" style="-fx-background-color:#30363d; -fx-text-fill:white;"/>
-                        <Separator/>
-                        <Label text="Vértices" style="-fx-text-fill:#58a6ff; -fx-font-weight:bold;"/>
-                        <Label fx:id="lstVertexLegend" text="0=SJO  1=ALAJ  2=HER&#10;3=CAR  4=TURR  5=LIM"
-                               style="-fx-text-fill:#7ee787; -fx-font-size:10; -fx-font-family:monospace;"/>
-                    </VBox>
-
-                    <VBox style="-fx-background-color:#0d1117;">
-                        <Label text="Visualización del Grafo" style="-fx-text-fill:#8b949e; -fx-font-size:11; -fx-padding:6 0 0 10;"/>
-                        <Canvas fx:id="lstCanvas" width="760" height="480"/>
-                        <Label fx:id="lstStatsLabel"
-                               text="Espacio: O(V+E)  |  existeArista: O(grado)  |  vecinos: O(1)  |  insertar: O(1)"
-                               style="-fx-text-fill:#58a6ff; -fx-font-size:11; -fx-padding:4 10;"/>
-                    </VBox>
-
-                    <VBox spacing="8" style="-fx-background-color:#0d1117; -fx-padding:8;">
-                        <Label text="Estructura: ArrayList&lt;List&lt;Integer&gt;&gt;" style="-fx-text-fill:#8b949e; -fx-font-size:11;"/>
-                        <TextArea fx:id="lstInfoArea" prefHeight="600" editable="false"
-                                  style="-fx-background-color:#161b22; -fx-text-fill:#c9d1d9; -fx-font-family:monospace; -fx-font-size:11;"/>
-                    </VBox>
-                </SplitPane>
-            </Tab>
-
-            <!-- ═══════════════════════════════════════════════════════
-                 TAB 3 – LISTA ENLAZADA
-            ═══════════════════════════════════════════════════════ -->
-            <Tab text="🔗 Lista Enlazada">
-                <SplitPane dividerPositions="0.17,0.73">
-                    <VBox spacing="10" style="-fx-background-color:#0d1117; -fx-padding:12;">
-                        <Label text="⚙ Configurar Grafo" style="-fx-text-fill:#58a6ff; -fx-font-weight:bold;"/>
-                        <Label text="Número de vértices (2-12):" style="-fx-text-fill:#c9d1d9; -fx-font-size:11;"/>
-                        <Spinner fx:id="lnkSpinner" editable="false"
-                                 style="-fx-background-color:#161b22; -fx-text-fill:white; -fx-pref-width:120;">
-                            <valueFactory>
-                                <SpinnerValueFactory.IntegerSpinnerValueFactory min="2" max="12" initialValue="6"/>
-                            </valueFactory>
-                        </Spinner>
-                        <CheckBox fx:id="lnkDirCheck" text="Grafo Dirigido"
-                                  style="-fx-text-fill:#c9d1d9;" selected="true"/>
-                        <Label text="Aristas (formato: u-v, separadas por coma):" style="-fx-text-fill:#c9d1d9; -fx-font-size:11;"/>
-                        <TextArea fx:id="lnkEdgesArea" prefHeight="90"
-                                  promptText="0-1,0-2,1-2,..."
-                                  style="-fx-background-color:#161b22; -fx-text-fill:#f97316; -fx-font-size:12;"/>
-                        <Button text="▶ Generar Grafo" onAction="#onLnkGenerate"
-                                maxWidth="Infinity" style="-fx-background-color:#1f6feb; -fx-text-fill:white; -fx-font-weight:bold;"/>
-                        <Button text="★ Cargar Ejemplo (CR)" onAction="#onLnkExample"
-                                maxWidth="Infinity" style="-fx-background-color:#238636; -fx-text-fill:white;"/>
-                        <Button text="✕ Limpiar" onAction="#onLnkClear"
-                                maxWidth="Infinity" style="-fx-background-color:#30363d; -fx-text-fill:white;"/>
-                        <Separator/>
-                        <Label text="Vértices" style="-fx-text-fill:#58a6ff; -fx-font-weight:bold;"/>
-                        <Label fx:id="lnkVertexLegend" text="0=SJO  1=ALAJ  2=HER&#10;3=CAR  4=TURR  5=LIM"
-                               style="-fx-text-fill:#7ee787; -fx-font-size:10; -fx-font-family:monospace;"/>
-                    </VBox>
-
-                    <VBox style="-fx-background-color:#0d1117;">
-                        <Label text="Grafo (layout circular)" style="-fx-text-fill:#8b949e; -fx-font-size:11; -fx-padding:6 0 0 10;"/>
-                        <Canvas fx:id="lnkCanvas" width="760" height="420"/>
-                        <Label fx:id="lnkStatsLabel"
-                               text="Espacio: O(V+E)  |  insertar arista: O(V+E)  |  existeArista: O(grado)  |  Control total de memoria"
-                               style="-fx-text-fill:#58a6ff; -fx-font-size:11; -fx-padding:4 10;"/>
-                    </VBox>
-
-                    <VBox spacing="8" style="-fx-background-color:#0d1117; -fx-padding:8;">
-                        <Label text="Nodos Enlazados [dato | next →]" style="-fx-text-fill:#8b949e; -fx-font-size:11;"/>
-                        <ScrollPane fitToWidth="true" style="-fx-background-color:#0d1117;" prefHeight="300">
-                            <VBox fx:id="lnkNodesBox" spacing="6" style="-fx-padding:4;"/>
-                        </ScrollPane>
-                        <Separator/>
-                        <Label text="Estructura Interna" style="-fx-text-fill:#8b949e; -fx-font-size:11;"/>
-                        <TextArea fx:id="lnkInfoArea" prefHeight="260" editable="false"
-                                  style="-fx-background-color:#161b22; -fx-text-fill:#c9d1d9; -fx-font-family:monospace; -fx-font-size:11;"/>
-                    </VBox>
-                </SplitPane>
-            </Tab>
-
-            <!-- ═══════════════════════════════════════════════════════
-                 TAB 4 – MST (KRUSKAL/PRIM) Y DIJKSTRA
-            ═══════════════════════════════════════════════════════ -->
-            <Tab text="📊 MST (Kruskal, Prim), Dijkstra">
-                <SplitPane dividerPositions="0.22,0.72">
-
-                    <!-- Panel izquierdo: controles -->
-                    <VBox spacing="10" style="-fx-background-color:#0d1117; -fx-padding:12;">
-                        <Label text="ALGORITMO" style="-fx-text-fill:#8b949e; -fx-font-size:10;"/>
-                        <ComboBox fx:id="algoCombo" maxWidth="Infinity"
-                                  style="-fx-background-color:#30363d; -fx-text-fill:white;"/>
+                        <CheckBox fx:id="graphDirCheck" text="Grafo Dirigido" onAction="#onGraphDirToggle" style="-fx-text-fill:#c9d1d9;" selected="true"/>
                         <Label text="REPRESENTACIÓN" style="-fx-text-fill:#8b949e; -fx-font-size:10;"/>
-                        <ComboBox fx:id="reprCombo" maxWidth="Infinity"
-                                  style="-fx-background-color:#30363d; -fx-text-fill:white;"/>
-                        <Label text="VÉRTICE INICIO" style="-fx-text-fill:#8b949e; -fx-font-size:10;"/>
-                        <ComboBox fx:id="startCombo" maxWidth="Infinity"
-                                  style="-fx-background-color:#30363d; -fx-text-fill:white;"/>
-
-                        <!-- solo visible para Dijkstra -->
-                        <VBox fx:id="dijkstraPanel" spacing="6">
-                            <Label text="VÉRTICE DESTINO" style="-fx-text-fill:#8b949e; -fx-font-size:10;"/>
-                            <ComboBox fx:id="endCombo" maxWidth="Infinity"
-                                      style="-fx-background-color:#30363d; -fx-text-fill:white;"/>
-                            <Button text="Encontrar ruta" onAction="#onFindRoute"
-                                    maxWidth="Infinity"
-                                    style="-fx-background-color:#6e40c9; -fx-text-fill:white;"/>
-                            <Label fx:id="routeLabel" text="Ruta: —"
-                                   style="-fx-text-fill:#7ee787; -fx-font-size:11; -fx-wrap-text:true;"/>
-                        </VBox>
-
-                        <Separator/>
-                        <Button text="▶ Ejecutar" onAction="#onAlgoRun"
+                        <ComboBox fx:id="graphReprCombo" maxWidth="Infinity" style="-fx-background-color:#30363d; -fx-text-fill:white;"/>
+                        <Label text="Aristas (formato: u-v, separadas por coma):" style="-fx-text-fill:#c9d1d9; -fx-font-size:11;"/>
+                        <TextArea fx:id="graphEdgesArea" prefHeight="90" promptText="Ej: 0-1,1-2,2-3,0-3"
+                                  style="-fx-background-color:#161b22; -fx-text-fill:#f97316; -fx-font-size:12;"/>
+                        <Label text="Ejemplo: 0-1 conecta el vértice 0 con el 1" style="-fx-text-fill:#8b949e; -fx-font-size:10;"/>
+                        <Button text="▶ Generar Grafo Ejemplo" onAction="#onGraphExample"
                                 maxWidth="Infinity" style="-fx-background-color:#1f6feb; -fx-text-fill:white; -fx-font-weight:bold;"/>
-                        <HBox spacing="6">
-                            <Button text="◀ Anterior" onAction="#onAlgoPrev"
-                                    style="-fx-background-color:#30363d; -fx-text-fill:white;" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-                            <Button text="Siguiente ▶" onAction="#onAlgoNext"
-                                    style="-fx-background-color:#30363d; -fx-text-fill:white;" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-                        </HBox>
-                        <Button text="▶ Auto" onAction="#onAlgoAuto"
+                        <Button text="▶ Agregar Aristas" onAction="#onGraphAddEdges"
                                 maxWidth="Infinity" style="-fx-background-color:#238636; -fx-text-fill:white;"/>
-                        <Button text="↺ Reiniciar" onAction="#onAlgoReset"
+                        <Button text="✕ Eliminar Aristas" onAction="#onGraphRemoveEdges"
                                 maxWidth="Infinity" style="-fx-background-color:#b91c1c; -fx-text-fill:white;"/>
-
-                        <Separator/>
-                        <Label text="VELOCIDAD (ms/paso)" style="-fx-text-fill:#8b949e; -fx-font-size:10;"/>
-                        <Slider fx:id="speedSlider" min="200" max="2000" value="700" showTickLabels="true" showTickMarks="true"/>
-
-                        <Separator/>
-                        <Label text="ESTADO" style="-fx-text-fill:#8b949e; -fx-font-size:10;"/>
-                        <Label fx:id="algoStepLabel" text="Paso 0 / 0" style="-fx-text-fill:#c9d1d9; -fx-font-size:11;"/>
-                        <Label fx:id="algoStateLabel" text="—" style="-fx-text-fill:#c9d1d9; -fx-font-size:11;"/>
-                        <Label fx:id="algoReprLabel" text="Matriz de Adyacencia" style="-fx-text-fill:#c9d1d9; -fx-font-size:11;"/>
-                        <Label fx:id="algoWeightLabel" text="Peso acumulado: 0"
-                               style="-fx-text-fill:#f59e0b; -fx-font-weight:bold; -fx-font-size:12;"/>
+                        <Button text="↺ Reiniciar" onAction="#onGraphReset"
+                                maxWidth="Infinity" style="-fx-background-color:#30363d; -fx-text-fill:white;"/>
                     </VBox>
-
-                    <!-- Panel central: canvas -->
                     <VBox style="-fx-background-color:#0d1117;">
-                        <HBox spacing="20" style="-fx-padding:6 10; -fx-alignment:CENTER_LEFT;">
-                            <HBox spacing="6" style="-fx-alignment:CENTER_LEFT;">
-                                <Label text="——" style="-fx-text-fill:#4a5568;"/>
-                                <Label text="Arista default" style="-fx-text-fill:#8b949e; -fx-font-size:11;"/>
-                            </HBox>
-                            <HBox spacing="6" style="-fx-alignment:CENTER_LEFT;">
-                                <Label text="——" style="-fx-text-fill:#00bcd4;"/>
-                                <Label fx:id="legendMstLabel" text="MST" style="-fx-text-fill:#8b949e; -fx-font-size:11;"/>
-                            </HBox>
-                            <HBox spacing="6" style="-fx-alignment:CENTER_LEFT;">
-                                <Label text="——" style="-fx-text-fill:#ef4444;"/>
-                                <Label text="Rechazada" style="-fx-text-fill:#8b949e; -fx-font-size:11;"/>
-                            </HBox>
-                            <HBox spacing="6" style="-fx-alignment:CENTER_LEFT;">
-                                <Label text="——" style="-fx-text-fill:#f59e0b;"/>
-                                <Label text="Actual" style="-fx-text-fill:#8b949e; -fx-font-size:11;"/>
-                            </HBox>
-                        </HBox>
-                        <Canvas fx:id="algoCanvas" width="740" height="520"/>
+                        <Label text="Visualización del Grafo" style="-fx-text-fill:#8b949e; -fx-font-size:11; -fx-padding:6 0 0 10;"/>
+                        <Canvas fx:id="graphCanvas" width="650" height="480" style="-fx-background-color:#0d1117;"/>
+                        <Label fx:id="graphStatsLabel" text="Grafo vacío. Genere un grafo para comenzar."
+                               style="-fx-text-fill:#58a6ff; -fx-font-size:11; -fx-padding:4 10;"/>
                     </VBox>
-
-                    <!-- Panel derecho: log + estructura -->
                     <VBox spacing="8" style="-fx-background-color:#0d1117; -fx-padding:8;">
-                        <Label text="LOG DE PASOS" style="-fx-text-fill:#8b949e; -fx-font-size:10; -fx-font-weight:bold;"/>
-                        <TextArea fx:id="algoLogArea" prefHeight="320" editable="false"
-                                  style="-fx-background-color:#161b22; -fx-text-fill:#c9d1d9; -fx-font-family:monospace; -fx-font-size:11;"/>
-                        <Separator/>
-                        <Label text="ESTRUCTURA DE DATOS" style="-fx-text-fill:#8b949e; -fx-font-size:10; -fx-font-weight:bold;"/>
-                        <TextArea fx:id="algoResultArea" prefHeight="220" editable="false"
-                                  style="-fx-background-color:#161b22; -fx-text-fill:#c9d1d9; -fx-font-family:monospace; -fx-font-size:11;"/>
+                        <Label text="Estructura y métodos del grafo" style="-fx-text-fill:#8b949e; -fx-font-size:11;"/>
+                        <TextArea fx:id="graphInfoArea" prefHeight="600" editable="false" wrapText="true"
+                                  style="-fx-background-color:white; -fx-text-fill:black; -fx-font-family:monospace; -fx-font-size:11; -fx-control-inner-background:white;"/>
                     </VBox>
                 </SplitPane>
             </Tab>
 
-            <!-- ═══════════════════════════════════════════════════════
-                 TAB 5 – ÁRBOLES BINARIOS (BST, AVL, BINARY TREE)
-            ═══════════════════════════════════════════════════════ -->
-            <Tab text="🌳 Árboles Binarios">
+            <Tab text="Árboles Binarios">
                 <SplitPane dividerPositions="0.2,0.65">
-
-                    <!-- Panel izquierdo: controles -->
                     <VBox spacing="10" style="-fx-background-color:#0d1117; -fx-padding:12;">
                         <Label text="REPRESENTACIÓN" style="-fx-text-fill:#8b949e; -fx-font-size:10;"/>
                         <ComboBox fx:id="treeTypeCombo" maxWidth="Infinity"
                                   style="-fx-background-color:#30363d; -fx-text-fill:white;"/>
-
                         <Separator/>
                         <Button text="▶ Generar Árbol Ejemplo" onAction="#onTreeGenerate"
                                 maxWidth="Infinity" style="-fx-background-color:#1f6feb; -fx-text-fill:white; -fx-font-weight:bold;"/>
                         <Button text="✕ Limpiar" onAction="#onTreeClear"
                                 maxWidth="Infinity" style="-fx-background-color:#30363d; -fx-text-fill:white;"/>
                     </VBox>
-
-                    <!-- Panel central: canvas -->
                     <VBox style="-fx-background-color:#0d1117;">
                         <Label text="Visualización del Árbol" style="-fx-text-fill:#8b949e; -fx-font-size:11; -fx-padding:6 0 0 10;"/>
-                        <Canvas fx:id="treeCanvas" width="700" height="480"
-                                style="-fx-background-color:#0d1117;"/>
-                        <Label fx:id="treeStatsLabel"
-                               text="Árbol vacío. Genere un árbol para comenzar."
+                        <Canvas fx:id="treeCanvas" width="700" height="480" style="-fx-background-color:#0d1117;"/>
+                        <Label fx:id="treeStatsLabel" text="Árbol vacío. Genere un árbol para comenzar."
                                style="-fx-text-fill:#58a6ff; -fx-font-size:11; -fx-padding:4 10;"/>
                     </VBox>
-
-                    <!-- Panel derecho: información -->
                     <VBox spacing="8" style="-fx-background-color:#0d1117; -fx-padding:8;">
                         <Label text="Métodos del árbol binario" style="-fx-text-fill:#8b949e; -fx-font-size:11;"/>
                         <TextArea fx:id="treeInfoArea" prefHeight="600" editable="false" wrapText="true"
-                                  style="-fx-background-color:#161b22; -fx-text-fill:#7ee787; -fx-font-family:monospace; -fx-font-size:11;"/>
+                                  style="-fx-background-color:white; -fx-text-fill:black; -fx-font-family:monospace; -fx-font-size:11; -fx-control-inner-background:white;"/>
+                    </VBox>
+                </SplitPane>
+            </Tab>
+
+            <Tab text="bTrees Sum">
+                <SplitPane dividerPositions="0.2,0.6">
+                    <VBox spacing="10" style="-fx-background-color:#0d1117; -fx-padding:12;">
+                        <Label text="bTreesSum(btree1, btree2)" style="-fx-text-fill:#58a6ff; -fx-font-weight:bold;"/>
+                        <Button text="▶ Generar Ejemplo y Sumar" onAction="#onBTreesSum"
+                                maxWidth="Infinity" style="-fx-background-color:#1f6feb; -fx-text-fill:white; -fx-font-weight:bold;"/>
+                        <Button text="✕ Limpiar" onAction="#onBTreesSumClear"
+                                maxWidth="Infinity" style="-fx-background-color:#30363d; -fx-text-fill:white;"/>
+                    </VBox>
+                    <VBox style="-fx-background-color:#0d1117;">
+                        <Label text="Árbol Binario Sumado" style="-fx-text-fill:#8b949e; -fx-font-size:11; -fx-padding:6 0 0 10;"/>
+                        <Canvas fx:id="btSumCanvas" width="650" height="480" style="-fx-background-color:#0d1117;"/>
+                    </VBox>
+                    <VBox spacing="8" style="-fx-background-color:#0d1117; -fx-padding:8;">
+                        <Label text="Resultado" style="-fx-text-fill:#8b949e; -fx-font-size:11;"/>
+                        <TextArea fx:id="btSumInfoArea" prefHeight="600" editable="false" wrapText="true"
+                                  style="-fx-background-color:white; -fx-text-fill:black; -fx-font-family:monospace; -fx-font-size:11; -fx-control-inner-background:white;"/>
+                    </VBox>
+                </SplitPane>
+            </Tab>
+
+            <Tab text="btNode Sum">
+                <SplitPane dividerPositions="0.2,0.6">
+                    <VBox spacing="10" style="-fx-background-color:#0d1117; -fx-padding:12;">
+                        <Label text="btNodeSum(btree)" style="-fx-text-fill:#58a6ff; -fx-font-weight:bold;"/>
+                        <Button text="▶ Generar Ejemplo y Calcular" onAction="#onBtNodeSum"
+                                maxWidth="Infinity" style="-fx-background-color:#1f6feb; -fx-text-fill:white; -fx-font-weight:bold;"/>
+                        <Button text="✕ Limpiar" onAction="#onBtNodeSumClear"
+                                maxWidth="Infinity" style="-fx-background-color:#30363d; -fx-text-fill:white;"/>
+                    </VBox>
+                    <VBox style="-fx-background-color:#0d1117;">
+                        <Label text="Árbol Binario con btNodeSum" style="-fx-text-fill:#8b949e; -fx-font-size:11; -fx-padding:6 0 0 10;"/>
+                        <Canvas fx:id="btNodeSumCanvas" width="650" height="480" style="-fx-background-color:#0d1117;"/>
+                    </VBox>
+                    <VBox spacing="8" style="-fx-background-color:#0d1117; -fx-padding:8;">
+                        <Label text="Resultado" style="-fx-text-fill:#8b949e; -fx-font-size:11;"/>
+                        <TextArea fx:id="btNodeSumInfoArea" prefHeight="600" editable="false" wrapText="true"
+                                  style="-fx-background-color:white; -fx-text-fill:black; -fx-font-family:monospace; -fx-font-size:11; -fx-control-inner-background:white;"/>
+                    </VBox>
+                </SplitPane>
+            </Tab>
+
+            <Tab text="Tighten">
+                <SplitPane dividerPositions="0.2,0.6">
+                    <VBox spacing="10" style="-fx-background-color:#0d1117; -fx-padding:12;">
+                        <Label text="REPRESENTACIÓN" style="-fx-text-fill:#8b949e; -fx-font-size:10;"/>
+                        <ComboBox fx:id="tightenTypeCombo" maxWidth="Infinity" style="-fx-background-color:#30363d; -fx-text-fill:white;"/>
+                        <Button text="▶ Generar Árbol Ejemplo" onAction="#onTightenGenerate"
+                                maxWidth="Infinity" style="-fx-background-color:#1f6feb; -fx-text-fill:white; -fx-font-weight:bold;"/>
+                        <Button text="▶ Aplicar tighten()" onAction="#onTightenApply"
+                                maxWidth="Infinity" style="-fx-background-color:#238636; -fx-text-fill:white;"/>
+                        <Button text="✕ Limpiar" onAction="#onTightenClear"
+                                maxWidth="Infinity" style="-fx-background-color:#30363d; -fx-text-fill:white;"/>
+                    </VBox>
+                    <VBox style="-fx-background-color:#0d1117;">
+                        <Label text="Visualización del Árbol" style="-fx-text-fill:#8b949e; -fx-font-size:11; -fx-padding:6 0 0 10;"/>
+                        <Canvas fx:id="tightenCanvas" width="650" height="480" style="-fx-background-color:#0d1117;"/>
+                    </VBox>
+                    <VBox spacing="8" style="-fx-background-color:#0d1117; -fx-padding:8;">
+                        <Label text="Antes / Después de tighten()" style="-fx-text-fill:#8b949e; -fx-font-size:11;"/>
+                        <TextArea fx:id="tightenInfoArea" prefHeight="600" editable="false" wrapText="true"
+                                  style="-fx-background-color:white; -fx-text-fill:black; -fx-font-family:monospace; -fx-font-size:11; -fx-control-inner-background:white;"/>
+                    </VBox>
+                </SplitPane>
+            </Tab>
+
+            <Tab text="Árbol ABM">
+                <SplitPane dividerPositions="0.2,0.6">
+                    <VBox spacing="10" style="-fx-background-color:#0d1117; -fx-padding:12;">
+                        <Button text="▶ Generar Árboles ABM Ejemplo" onAction="#onAbmGenerate"
+                                maxWidth="Infinity" style="-fx-background-color:#1f6feb; -fx-text-fill:white; -fx-font-weight:bold;"/>
+                        <Button text="▶ joinABM(a, b)" onAction="#onAbmJoin"
+                                maxWidth="Infinity" style="-fx-background-color:#238636; -fx-text-fill:white;"/>
+                        <Button text="✕ Limpiar" onAction="#onAbmClear"
+                                maxWidth="Infinity" style="-fx-background-color:#30363d; -fx-text-fill:white;"/>
+                    </VBox>
+                    <VBox style="-fx-background-color:#0d1117;">
+                        <Label text="Resultado joinABM" style="-fx-text-fill:#8b949e; -fx-font-size:11; -fx-padding:6 0 0 10;"/>
+                        <Canvas fx:id="abmCanvas" width="650" height="480" style="-fx-background-color:#0d1117;"/>
+                    </VBox>
+                    <VBox spacing="8" style="-fx-background-color:#0d1117; -fx-padding:8;">
+                        <Label text="isABM / joinABM" style="-fx-text-fill:#8b949e; -fx-font-size:11;"/>
+                        <TextArea fx:id="abmInfoArea" prefHeight="600" editable="false" wrapText="true"
+                                  style="-fx-background-color:white; -fx-text-fill:black; -fx-font-family:monospace; -fx-font-size:11; -fx-control-inner-background:white;"/>
                     </VBox>
                 </SplitPane>
             </Tab>
@@ -333,3 +173,4 @@
         </TabPane>
     </center>
 </BorderPane>
+
